@@ -9,9 +9,9 @@
 #
 # If there is already a running instance, user will be prompted to end it.
 
+
 updateicon() {
 	echo "$1" > /tmp/streamingicon
-	pkill -RTMIN+9 "${STATUSBAR:?}"
 	}
 
 killstreaming() {
@@ -20,7 +20,6 @@ killstreaming() {
 	kill -15 "$recpid"
 	rm -f /tmp/streamingpid
 	updateicon ""
-	pkill -RTMIN+9 "${STATUSBAR:?}"
 	# even after SIGTERM, ffmpeg may still run, so SIGKILL it.
 	sleep 3
 	kill -9 "$recpid"
@@ -28,8 +27,8 @@ killstreaming() {
 	}
 
 screencast() {
-	STREAM_KEY="$(cat $HOME/.config/stream/streamkey)"
 	ffmpeg -y \
+	-logleve panic \
 	-f x11grab \
 	-framerate 60 \
 	-s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
@@ -40,27 +39,28 @@ screencast() {
 	-bufsize "1000k"
 	-pix_fmt yuv420p \
 	-f flv \
-	"rtmp://live-sjc.twitch.tv/app/$STREAM_KEY" &
+	"rtmp://live.twitch.tv/app/$STREAM_KEY" &
 	echo $! > /tmp/streamingpid
 	updateicon "⏺️🎙️"
        	}
 
 video() {
-	STREAM_KEY="$(cat $HOME/.config/stream/streamkey)"
-	ffmpeg \
+	ffmpeg -y \
 	-f x11grab \
+	-framerate 60 \
 	-s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
 	-i $DISPLAY \
- 	-c:v libx264 -qp 0 -r 30 \
+	-r 30
+ 	-c:v libx264rgb -qp 0\
+	-bufsize "1000k"
 	-pix_fmt yuv420p \
 	-f flv \
-	"rtmp://live-sjc.twitch.tv/app/$STREAM_KEY" &
+	"rtmp://live.twitch.tv/app/$STREAM_KEY" &
 	echo $! > /tmp/streamingpid
 	updateicon "⏺️"
 	}
 
 webcamhidef() {
-	STREAM_KEY="$(cat $HOME/.config/stream/streamkey)"
 	ffmpeg \
 	-f v4l2 \
 	-i /dev/video0 \
@@ -73,7 +73,6 @@ webcamhidef() {
 	}
 
 webcam() {
-	STREAM_KEY="$(cat $HOME/.config/stream/streamkey)"
 	ffmpeg \
 	-f v4l2 \
 	-i /dev/video0 \
@@ -87,7 +86,6 @@ webcam() {
 
 
 audio() {
-	STREAM_KEY="$(cat $HOME/.config/stream/streamkey)"
 	ffmpeg \
 	-f alsa -i default \
 	-c:a flac \
@@ -113,6 +111,8 @@ asktoend() {
 	response=$(printf "No\\nYes" | dmenu -i -p "Streaming still active. End streaming?") &&
 	[ "$response" = "Yes" ] &&  killstreaming
 	}
+
+STREAM_KEY="$(cat $HOME/.config/stream/streamkey)"
 
 case "$1" in
 	screencast) screencast;;

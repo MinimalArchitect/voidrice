@@ -1,0 +1,9 @@
+#!/bin/env sh
+
+FROM_EXT=$1
+TO_EXT="mp3"
+
+for FILE int *.$EXT;do
+	echo -e "'$FILE' -> '${FILE%.$FROM_EXT}.$TO_EXT'";
+	ffmpeg -nostats -loglevel 0 -i "$FILE" -c:a libmp3lame "${FILE%.$FROM_EXT}.$TO_EXT";
+done;
