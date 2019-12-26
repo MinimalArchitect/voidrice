@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+infocmp > terminfo.src
+tic terminfo.src
+scp .terminfo/s/st-256color /usr/share/terminfo/s/st-256color

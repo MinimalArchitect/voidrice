@@ -1,0 +1,3 @@
+
+#!/bin/sh
+snore 25m && notify-send -u normal "Take a break!"

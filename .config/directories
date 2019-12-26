@@ -1,0 +1,16 @@
+# You can add comments to these files with #
+h	~/
+d	~/document
+s	~/source
+life	~/life-manager
+l	~/literature
+a	~/audiobook
+b	~/book
+r	~/recipe
+pp	~/picture
+mm	~/music
+vv	~/video
+cf	~/.config
+sc	~/.local/bin
+mn	/mnt
+
